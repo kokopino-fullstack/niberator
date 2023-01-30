@@ -1,0 +1,7 @@
+ads1015==0.0.8
+automationhat==0.4.1
+i2cdevice==0.0.7
+RPi.GPIO==0.7.1
+sn3218==2.0.0
+spidev==3.6
+ST7735==0.0.4.post1
