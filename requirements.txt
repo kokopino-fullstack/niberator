@@ -5,3 +5,5 @@ RPi.GPIO==0.7.1
 sn3218==2.0.0
 spidev==3.6
 ST7735==0.0.4.post1
+minimalmodbus==2.0.1
+pyserial==3.5
