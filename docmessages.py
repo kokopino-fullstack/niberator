@@ -1,3 +1,5 @@
+import sys
+
 def help_documentation():
     help_text = """
     Seems like you encountered an error using this software.
