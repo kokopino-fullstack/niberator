@@ -68,9 +68,7 @@ def main(argv):
     output_pin_num = 0
     modbus_device = "/dev/ttyUSB0"
     modbus_instrument = None
-    last_state = None
-    current_state = None
-
+ 
     opts, args = getopt.getopt(argv, "hi:o:m:", ["switch-input=", "output=", "modbus-file="])
     for opt, arg in opts:
         if opt == '-h':
@@ -96,10 +94,13 @@ def main(argv):
     modbus_instrument = init_modbus(modbus_device)
 
     current_speed = read_nibe_ventilation_speed(modbus_device)
+ #  If read speed is high, then assume that it has been set to high manually
+ #  and from the low/medium speen switching perspective, we can treat that 
+ #  state as medium speed. 
+    if current_speed == NIBE_SPEED_HIGH:
+        current_speed = NIBE_SPEED_MEDIUM;
     print("Current speed is: ", speed_to_text(current_speed))
-    last_state=current_speed
-    current_state=current_speed
-
+ 
     if automationhat.is_automation_hat():
         automationhat.light.power.write(1)
         print("Starting to listen state changes in input number {}", input_pin_num)
@@ -107,11 +108,24 @@ def main(argv):
         print('Error! No automation HAT detected.');
         sys.exit(1)
 
-    while True:
-        input_pin_state = automationhat.input[input_pin_num].read()
-        input_pin_state
-        if input_pin_state == 1:
-            print("Input pin {} is high, switching to higher speed", input_pin_num)
-            switch_speed_to_medium_if_not_already(current_speed, modbus_instrument)
-            current_speed = NIBE_SPEED_LOW
-        time.sleep(0.5)
+    try:
+        while True:
+            input_pin_state = automationhat.input[input_pin_num].read()
+            input_pin_state
+            if input_pin_state == 1:
+                print("Input pin {} is high, switching to medium speed", input_pin_num)
+                switch_speed_to_low_if_not_already(current_speed, modbus_instrument)
+                current_speed = NIBE_SPEED_LOW
+            else:
+                print("Input pin {} is low, switching to lower speed", input_pin_num)
+                switch_speed_to_medium_if_not_already(current_speed, modbus_instrument)
+                current_speed = NIBE_SPEED_MEDIUM
+            time.sleep(1)
+    except KeyboardInterrupt:
+        print("Exiting...")
+        automationhat.light.power.write(0)
+        sys.exit(0)
+    except Exception as err:
+        print(f"Unexpected {err=}, {type(err)=}")
+        automationhat.light.power.write(0)
+        sys.exit(0)
