@@ -94,6 +94,12 @@ def main(argv):
     if output_pin_num == 0:
         print("Output pin switching disabled!")
 
+    if os.path.isfile(modbus_device):
+        print("Modbus device file: ", modbus_device)
+    else:
+        print("Modbus device file not found: ", modbus_device)
+        usage()
+    
     print("Initializing modbus connection to device {}...", modbus_device)
     modbus_instrument = init_modbus(modbus_device)
 
