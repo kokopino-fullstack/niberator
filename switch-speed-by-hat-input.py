@@ -104,7 +104,7 @@ def main(argv):
         print("Check that you are using a correct device file and that the device is connected to the system.")
         usage()
 
-    current_speed = read_nibe_ventilation_speed(modbus_device)
+    current_speed = read_nibe_ventilation_speed(modbus_instrument)
  #  If read speed is high, then assume that it has been set to high manually
  #  and from the low/medium speen switching perspective, we can treat that 
  #  state as medium speed. 
