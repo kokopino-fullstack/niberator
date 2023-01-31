@@ -5,20 +5,21 @@ import time
 import minimalmodbus
 import automationhat
 
-NIBE_DEFAULT_CLIENT_ID = 30;
-NIBE_VENTILATION_SPEED_REG = 14;
-NIBE_SPEED_LOW = 0;
-NIBE_SPEED_MEDIUM = 1;
-NIBE_SPEED_HIGH = 2;
+NIBE_DEFAULT_CLIENT_ID = 30
+NIBE_VENTILATION_SPEED_REG = 14
+NIBE_SPEED_LOW = 0
+NIBE_SPEED_MEDIUM = 1
+NIBE_SPEED_HIGH = 2
 
 def speed_to_text(speed):
-    match speed:
-        case 0:
-            return "Low"
-        case 1:
-            return "Medium"
-        case 2:
-            return "High"
+    if speed == 0:
+        return "Low"
+    elif speed == 1:
+        return "Medium"
+    elif speed == 2:
+        return "High"
+    else:
+        return "Unknown"
 
 
 def init_modbus(device_file):
@@ -30,7 +31,10 @@ def init_modbus(device_file):
 def read_nibe_ventilation_speed(instrument):
     ventilation_speed = instrument.read_register(NIBE_VENTILATION_SPEED_REG, 0) 
     print("Current ventilation speed: {}", ventilation_speed)
-    return ventilation_speed    
+    if ventilation_speed in (NIBE_SPEED_LOW, NIBE_SPEED_MEDIUM, NIBE_SPEED_HIGH):
+        return ventilation_speed
+    else:
+        raise Exception("Unknown ventilation speed: {}".format(ventilation_speed))
 
 def switch_speed_to_low_if_not_already(current_speed, instrument):
     if current_speed != NIBE_SPEED_LOW:
