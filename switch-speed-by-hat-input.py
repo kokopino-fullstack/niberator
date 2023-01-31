@@ -6,7 +6,7 @@ import time
 import minimalmodbus
 import automationhat
 
-import docmessages
+from docmessages import help_documentation 
 
 
 NIBE_DEFAULT_CLIENT_ID = 30
@@ -38,7 +38,8 @@ def read_nibe_ventilation_speed(instrument):
     except minimalmodbus.NoResponseError as no_response_err:
         print("No response from Nibe ventilation unit, check that the unit is powered on and that the RS485 cable is connected to the unit.")
         help_documentation()
-    else:
+    except minimalmodbus.InvalidResponseError as invalid_response_err:
+        print("Invalid response from Nibe ventilation unit. Please check device's MODBUS settings and ensure that you use the same values here.")
         help_documentation()
     print("Current ventilation speed: {}", ventilation_speed)
     if ventilation_speed in (NIBE_SPEED_LOW, NIBE_SPEED_MEDIUM, NIBE_SPEED_HIGH):
