@@ -95,14 +95,14 @@ def main(argv):
     if output_pin_num == 0:
         print("Output pin switching disabled!")
 
-    if os.path.isfile(modbus_device):
-        print("Modbus device file: ", modbus_device)
-    else:
-        print("Modbus device file not found: ", modbus_device)
-        usage()
     
     print("Initializing modbus connection to device {}...", modbus_device)
-    modbus_instrument = init_modbus(modbus_device)
+    try:
+        modbus_instrument = init_modbus(modbus_device)
+    except Exception as err:
+        print("Error initializing modbus connection, device: {}", modbus_device)
+        print("Check that you are using a correct device file and that the device is connected to the system.")
+        usage()
 
     current_speed = read_nibe_ventilation_speed(modbus_device)
  #  If read speed is high, then assume that it has been set to high manually
