@@ -133,3 +133,6 @@ def main(argv):
         print(f"Unexpected {err=}, {type(err)=}")
         automationhat.light.power.write(0)
         sys.exit(0)
+
+if __name__ == "__main__":
+    main(sys.argv)
