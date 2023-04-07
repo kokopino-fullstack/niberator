@@ -118,14 +118,14 @@ def main(argv):
  #  and from the low/medium speen switching perspective, we can treat that 
  #  state as medium speed. 
     if current_speed == NIBE_SPEED_HIGH:
-        current_speed = NIBE_SPEED_MEDIUM;
+        current_speed = NIBE_SPEED_MEDIUM
     print("Current speed is: ", speed_to_text(current_speed))
  
     if automationhat.is_automation_hat():
         automationhat.light.power.write(1)
         print("Starting to listen state changes in input number {}", input_pin_num)
     else:
-        print('Error! No automation HAT detected.');
+        print('Error! No automation HAT detected.')
         sys.exit(1)
     # queue to hold samples from the switch state.
     # keep six last samples and require at least four to switch state
