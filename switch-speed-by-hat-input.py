@@ -6,8 +6,7 @@ import time
 import minimalmodbus
 import automationhat
 
-from docmessages import help_documentation 
-
+from docmessages import help_documentation
 
 NIBE_DEFAULT_CLIENT_ID = 30
 NIBE_VENTILATION_SPEED_REG = 14
@@ -128,20 +127,26 @@ def main(argv):
     else:
         print('Error! No automation HAT detected.');
         sys.exit(1)
-
+    # queue to hold samples from the switch state.
+    # keep six last samples and require at least four to switch state
+    switch_states = []
     try:
         while True:
             input_pin_state = automationhat.input[input_pin_num].read()
-            input_pin_state
             if input_pin_state == 1:
-                print("Input pin {} is high, switching to medium speed", input_pin_num)
-                switch_speed_to_low_if_not_already(current_speed, modbus_instrument)
-                current_speed = NIBE_SPEED_LOW
+                switch_states.append(1)
+                if switch_states.count(1) >= 4:
+                    print("Input pin {} is high, switching to medium speed", input_pin_num)
+                    switch_speed_to_low_if_not_already(current_speed, modbus_instrument)
+                    current_speed = NIBE_SPEED_LOW
             else:
-                print("Input pin {} is low, switching to lower speed", input_pin_num)
-                switch_speed_to_medium_if_not_already(current_speed, modbus_instrument)
-                current_speed = NIBE_SPEED_MEDIUM
-            time.sleep(1)
+                switch_states.append(0)
+                if switch_states.count(0) >= 4:
+                    print("Input pin {} is low, switching to lower speed", input_pin_num)
+                    switch_speed_to_medium_if_not_already(current_speed, modbus_instrument)
+                    current_speed = NIBE_SPEED_MEDIUM
+            time.sleep(0.5)
+            switch_states = switch_states[-6:]
     except KeyboardInterrupt:
         print("Exiting...")
         automationhat.light.power.write(0)
