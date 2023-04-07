@@ -34,17 +34,17 @@ def init_modbus(device_file):
 def read_nibe_ventilation_speed(instrument):
     try:
         ventilation_speed = instrument.read_register(NIBE_VENTILATION_SPEED_REG, 0)
+        print("Current ventilation speed: {}", ventilation_speed)
+        if ventilation_speed in (NIBE_SPEED_LOW, NIBE_SPEED_MEDIUM, NIBE_SPEED_HIGH):
+            return ventilation_speed
+        else:
+            raise Exception("Unknown ventilation speed: {}".format(ventilation_speed))
     except minimalmodbus.NoResponseError as no_response_err:
         print("No response from Nibe ventilation unit, check that the unit is powered on and that the RS485 cable is connected to the unit.")
         help_documentation()
     except minimalmodbus.InvalidResponseError as invalid_response_err:
         print("Invalid response from Nibe ventilation unit. Please check device's MODBUS settings and ensure that you use the same values here.")
         help_documentation()
-    print("Current ventilation speed: {}", ventilation_speed)
-    if ventilation_speed in (NIBE_SPEED_LOW, NIBE_SPEED_MEDIUM, NIBE_SPEED_HIGH):
-        return ventilation_speed
-    else:
-        raise Exception("Unknown ventilation speed: {}".format(ventilation_speed))
 
 def switch_speed_to_low_if_not_already(current_speed, instrument):
     if current_speed != NIBE_SPEED_LOW:
