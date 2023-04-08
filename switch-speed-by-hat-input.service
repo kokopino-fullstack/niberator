@@ -1,0 +1,11 @@
+[Unit]
+Description=Service for controlling nibe speed based on automation hat input switch
+After=multi-user.target
+
+[Service]
+Type=simple
+Restart=always
+ExecStart=/usr/bin/python3 <install-dir>/test.py
+
+[Install]
+WantedBy=multi-user.target
