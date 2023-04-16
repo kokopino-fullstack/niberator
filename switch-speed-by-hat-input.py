@@ -27,9 +27,10 @@ def speed_to_text(speed):
 
 
 def init_modbus(device_file):
-    instrument = minimalmodbus.Instrument('/dev/ttyUSB0', NIBE_DEFAULT_CLIENT_ID)
+    instrument = minimalmodbus.Instrument('/dev/ttyUSB0', NIBE_DEFAULT_CLIENT_ID,"rtu", True, True)
     instrument.serial.baudrate = 19200  # Baud
     instrument.serial.parity = minimalmodbus.serial.PARITY_EVEN
+    
     return instrument
 
 def read_nibe_ventilation_speed(instrument):
@@ -50,7 +51,7 @@ def read_nibe_ventilation_speed(instrument):
 def switch_speed_to_low_if_not_already(current_speed, instrument):
     if current_speed != NIBE_SPEED_LOW:
         print("Switching speed to low")
-        instrument.write_register(NIBE_VENTILATION_SPEED_REG, NIBE_SPEED_LOW, 0)
+        instrument.write_register(NIBE_VENTILATION_SPEED_REG, NIBE_SPEED_LOW, 0, 6)
         print("Speed switched to low")
     else:
         print("Speed is already low, no need to switch")
@@ -58,7 +59,7 @@ def switch_speed_to_low_if_not_already(current_speed, instrument):
 def switch_speed_to_medium_if_not_already(current_speed, instrument):
     if current_speed != NIBE_SPEED_MEDIUM:
         print("Switching speed to medium")
-        instrument.write_register(NIBE_VENTILATION_SPEED_REG, NIBE_SPEED_MEDIUM, 0)  # Registernumber, value, number of decimals, function code
+        instrument.write_register(NIBE_VENTILATION_SPEED_REG, NIBE_SPEED_MEDIUM, 0, 6)  # Registernumber, value, number of decimals, function code
         print("Speed switched to medium")
     else:
         print("Speed is already medium, no need to switch")
