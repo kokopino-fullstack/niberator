@@ -133,7 +133,7 @@ def main(argv):
     switch_states = []
     try:
         while True:
-            input_pin_state = automationhat.input[input_pin_num].read()
+            input_pin_state = automationhat.input[input_pin_num - 1].read()
             if input_pin_state == 1:
                 switch_states.append(1)
                 if switch_states.count(1) >= 4:
