@@ -14,5 +14,5 @@ if [ $? -ne 0 ]; then
 fi
 cp switch-speed-by-hat-input.py /opt/niberator
 cp switch-speed-by-hat-input.service /etc/systemd/system
-systemctl daemon reload
+systemctl daemon-reload
 echo "Installed."
