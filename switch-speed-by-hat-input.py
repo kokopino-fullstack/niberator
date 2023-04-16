@@ -13,6 +13,7 @@ NIBE_VENTILATION_SPEED_REG = 14
 NIBE_SPEED_LOW = 0
 NIBE_SPEED_MEDIUM = 1
 NIBE_SPEED_HIGH = 2
+NIBERATOR_INPUT_SCAN_SPEED = 1  # seconds
 
 def speed_to_text(speed):
     if speed == 0:
@@ -34,7 +35,7 @@ def init_modbus(device_file):
 def read_nibe_ventilation_speed(instrument):
     try:
         ventilation_speed = instrument.read_register(NIBE_VENTILATION_SPEED_REG, 0)
-        print("Current ventilation speed: {}", ventilation_speed)
+        print("Current ventilation speed: {}".format(ventilation_speed))
         if ventilation_speed in (NIBE_SPEED_LOW, NIBE_SPEED_MEDIUM, NIBE_SPEED_HIGH):
             return ventilation_speed
         else:
@@ -105,11 +106,11 @@ def main(argv):
         print("Output pin switching disabled!")
 
     
-    print("Initializing modbus connection to device {}...", modbus_device)
+    print("Initializing modbus connection to device {}...".format(modbus_device))
     try:
         modbus_instrument = init_modbus(modbus_device)
     except Exception as err:
-        print("Error initializing modbus connection, device: {}", modbus_device)
+        print("Error initializing modbus connection, device: {}".format(modbus_device))
         print("Check that you are using a correct device file and that the device is connected to the system.")
         usage()
 
@@ -123,7 +124,7 @@ def main(argv):
  
     if automationhat.is_automation_hat():
         automationhat.light.power.write(1)
-        print("Starting to listen state changes in input number {}", input_pin_num)
+        print("Starting to listen state changes in input number {}".format(input_pin_num))
     else:
         print('Error! No automation HAT detected.')
         sys.exit(1)
@@ -136,16 +137,16 @@ def main(argv):
             if input_pin_state == 1:
                 switch_states.append(1)
                 if switch_states.count(1) >= 4:
-                    print("Input pin {} is high, switching to medium speed", input_pin_num)
+                    print("Input pin {} is high, switching to medium speed".format(input_pin_num))
                     switch_speed_to_low_if_not_already(current_speed, modbus_instrument)
                     current_speed = NIBE_SPEED_LOW
             else:
                 switch_states.append(0)
                 if switch_states.count(0) >= 4:
-                    print("Input pin {} is low, switching to lower speed", input_pin_num)
+                    print("Input pin {} is low, switching to lower speed".format(input_pin_num))
                     switch_speed_to_medium_if_not_already(current_speed, modbus_instrument)
                     current_speed = NIBE_SPEED_MEDIUM
-            time.sleep(0.5)
+            time.sleep(NIBERATOR_INPUT_SCAN_SPEED)
             switch_states = switch_states[-6:]
     except KeyboardInterrupt:
         print("Exiting...")
