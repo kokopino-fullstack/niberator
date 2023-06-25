@@ -14,6 +14,6 @@ if [ $? -ne 0 ]; then
 fi
 cp switch-speed-by-hat-input.py /opt/niberator
 cp switch-speed-by-hat-input.service /etc/systemd/system
-pip3 install -c requirements.txt --target /opt/niberator 
+pip3 install -r requirements.txt --target /opt/niberator
 systemctl daemon-reload
 echo "Installed."
