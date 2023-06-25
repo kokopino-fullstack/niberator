@@ -138,13 +138,13 @@ def main(argv):
             if input_pin_state == 1:
                 switch_states.append(1)
                 if switch_states.count(1) >= 4:
-                    print("Input pin {} is high, switching to medium speed".format(input_pin_num))
+                    print("Input pin {} is high, switching to low speed".format(input_pin_num))
                     switch_speed_to_low_if_not_already(current_speed, modbus_instrument)
                     current_speed = NIBE_SPEED_LOW
             else:
                 switch_states.append(0)
                 if switch_states.count(0) >= 4:
-                    print("Input pin {} is low, switching to lower speed".format(input_pin_num))
+                    print("Input pin {} is low, switching to medium speed".format(input_pin_num))
                     switch_speed_to_medium_if_not_already(current_speed, modbus_instrument)
                     current_speed = NIBE_SPEED_MEDIUM
             time.sleep(NIBERATOR_INPUT_SCAN_SPEED)
