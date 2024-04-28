@@ -8,6 +8,7 @@ import automationhat
 
 from docmessages import help_documentation
 
+ANALOG_LOW_VOLTAGE = 0.5
 NIBE_DEFAULT_CLIENT_ID = 30
 NIBE_VENTILATION_SPEED_REG = 14
 NIBE_SPEED_LOW = 0
@@ -70,6 +71,8 @@ def usage():
     Options:
      -h     Show help
      -i or --switch-input [number]  The number of the input pin (24v tolerant) to monitor (1, 2 or 3)
+     -a or --analog-input [number]  The number of the analog input pin to monitor (1, 2 or 3)
+     -m or --mode [number]          Input detection mode ("analog" or "digital")
      -o or --output [number]        The output pin to rise when input is detected, for example, to light a LED
                                     to indicate a low fan speed setting.
      -m or --modbus-file            The device file for the RS485 RTU device connected to Nibe (default is
@@ -78,9 +81,21 @@ def usage():
     print(help_text)
     exit(0)
 
+def get_input_on_off(mode, pin_num_analog, pin_num_digital):
+    if mode == "analog":
+        voltage = automationhat.analog[pin_num - 1].read()
+        if voltage > ANALOG_LOW_VOLTAGE:
+            return 1
+        else:
+            return 0
+    else:
+        return automationhat.input[pin_num - 1].read()
+
 
 def main(argv):
     input_pin_num = 1
+    analog_input_pin_num = 1
+    input_mode = "digital"
     output_pin_num = 0
     modbus_device = "/dev/ttyUSB0"
     modbus_instrument = None
@@ -92,6 +107,16 @@ def main(argv):
         elif opt in ("-i", "--switch-input"):
             if arg in ("1", "2", "3"):
                 input_pin_num = int(arg)
+            else:
+                usage()
+        elif opt in ("-a", "--analog-input"):
+            if arg in ("1", "2", "3"):
+                analog_input_pin_num = int(arg)
+            else:
+                usage()
+        elif opt in ("-m", "--mode"):
+            if arg in ("analog", "digital"):
+                input_mode = arg
             else:
                 usage()
         elif opt in ("-o", "--output"):
@@ -134,7 +159,7 @@ def main(argv):
     switch_states = []
     try:
         while True:
-            input_pin_state = automationhat.input[input_pin_num - 1].read()
+            input_pin_state = get_input_on_off(input_mode, analog_input_pin_num, input_pin_num)
             if input_pin_state == 1:
                 switch_states.append(1)
                 if switch_states.count(1) >= 4:
